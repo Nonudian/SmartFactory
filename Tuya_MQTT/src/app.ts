@@ -1,9 +1,8 @@
-const TuyAPI = require("tuyapi")
+import MQTTServer from "./MQTT/MQTTServer";
+import MQTTClient from "./MQTT/MQTTClient";
 
-const device = new TuyAPI({
-    id: "mt4te4vpae05k7ar8uoj",
-    key: "8977c3bf1f70432da13c0ba73546dfd3"
-})
-
-
-device.on("connected", () => console.log("Connected to device!"))
+const broker = new MQTTServer();
+const fc = new MQTTClient("dk744daa4d4");
+fc.connect();
+const sc = new MQTTClient("dk74s1sa64a");
+sc.connect();

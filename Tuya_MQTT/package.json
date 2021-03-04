@@ -5,8 +5,8 @@
         "start": "ts-node ./src/app.ts"
     },
     "dependencies": {
+        "mqtt-connection": "^4.1.0",
         "ts-node": "^9.1.1",
-        "tuyapi": "github:codetheweb/tuyapi",
         "typescript": "^4.2.2"
     },
     "devDependencies": {
