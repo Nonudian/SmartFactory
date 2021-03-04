@@ -1,17 +1,25 @@
-const net = require('net')
-import * as Connection from "mqtt-connection"
+const mqtt = require('mqtt')
 
 class MQTTClient {
-    public client: Connection;
     public id: string;
 
     constructor(id: string) {
         this.id = id;
-        this.client = Connection(net.createConnection(1883, 'localhost'))
-    }
+        const client = mqtt.connect('mqtt://test.mosquitto.org')
 
-    connect() {
-        this.client.connect({clientId: this.id});
+        client.on('connect', function () {
+            client.subscribe('presence', function (err) {
+                if (!err) {
+                    client.publish('presence', 'Hello mqtt')
+                }
+            })
+        })
+
+        client.on('message', function (topic, message) {
+            // message is Buffer
+            console.log(message.toString())
+            client.end()
+        })
     }
 }
 
