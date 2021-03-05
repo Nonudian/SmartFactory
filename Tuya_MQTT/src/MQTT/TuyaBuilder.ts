@@ -1,35 +1,31 @@
-import { Packet } from "mqtt-packet";
 import { MQTTClientBuilder } from "./MQTTClientBuilder";
+import { Device } from "./DeviceBuilder";
 
 
+/** Tuya client builder */
 export class TuyaBuilder extends MQTTClientBuilder {
-    private devicesData: Object[];
+    private devices: Device[];
 
-    withDevices(devicesData: Object[]) {
-        this.devicesData = devicesData;
+    withDevices(devices: Device[]) {
+        this.devices = devices;
         return this;
     }
 
     async build() {
-        await super.build();
+        super.build().then(async tuya => {
+            await tuya.subscribe("tuya");
+            await tuya.publishToAllDevices("I'm Tuya");
+        });
         return this;
     }
 
-    async ready() {
-        await this.client.subscribe("tuya");
-    }
-
     async publishToAllDevices(message: string) {
-        for (let device of this.devicesData) {
-            await this.publishToOneDevice(device["type"], device["deviceId"], message);
+        for (const { type, deviceId } of this.devices) {
+            await this.publish(`device.${type}.${deviceId}`, message);
         }
     }
 
-    async publishToOneDevice(deviceType: string, deviceId: string, message: string) {
-        await this.client.publish(`device.${deviceType}.${deviceId}`, message);
-    }
-
-    handleMessage(topic: string, payload: Buffer, packet: Packet): void {
-        console.info(`tuya received the following message on topic {${topic}}: ${payload}`);
+    handleMessage(topic: string, payload: Buffer): void {
+        console.info(`Tuya received the following message on topic <${topic}>: ${payload}`);
     }
 }
