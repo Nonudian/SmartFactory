@@ -1,19 +1,19 @@
-import MQTTDevice from "./MQTTDevice";
+import Device from "./Device";
 import {AsyncMqttClient} from "async-mqtt";
 import {Packet} from "mqtt-packet";
 const MQTT = require("async-mqtt");
 
-class MQTTThermometer extends MQTTDevice {
+class Thermometer extends Device {
     protected temp_current: number;
 
-    constructor(device_id: string, client: AsyncMqttClient, temp_current: number) {
-        super(device_id, client);
+    constructor(client: AsyncMqttClient, device_id: string, temp_current: number) {
+        super(client, device_id);
         this.temp_current = temp_current;
     }
 
-    public static async build(device_id: string, temp_current: number): Promise<MQTTThermometer> {
+    public static async build(device_id: string, temp_current: number): Promise<Thermometer> {
         const client = await MQTT.connectAsync("mqtt://test.mosquitto.org")
-        return new MQTTThermometer(device_id, client, temp_current)
+        return new Thermometer(client, device_id, temp_current)
     }
 
     handleMessage(topic: string, payload: Buffer, packet: Packet) {
@@ -21,4 +21,4 @@ class MQTTThermometer extends MQTTDevice {
     }
 }
 
-export default MQTTThermometer
+export default Thermometer
