@@ -1,22 +1,22 @@
-import {AsyncMqttClient} from "async-mqtt";
-import {Packet} from "mqtt-packet";
+import {AsyncMqttClient} from "async-mqtt"
+import {Packet} from "mqtt-packet"
 
 abstract class BuildableMQTTClient {
     public readonly client: AsyncMqttClient;
 
     protected constructor(client: AsyncMqttClient) {
-        this.client = client;
-        this.registerEvents();
+        this.client = client
+        this.registerEvents()
     }
 
-    registerEvents() {
+    registerEvents(): void {
         this.client.on('message', this.handleMessage.bind(this))
     }
 
     public static async build(...args: any[]): Promise<BuildableMQTTClient> {
-        return Promise.reject("`public static async build` Not implemented.");
-    };
+        return Promise.reject("`public static async build` Not implemented.")
+    }
 
-    abstract handleMessage(topic: string, payload: Buffer, packet: Packet);
+    abstract handleMessage(topic: string, payload: Buffer, packet: Packet): void
 }
 export default BuildableMQTTClient

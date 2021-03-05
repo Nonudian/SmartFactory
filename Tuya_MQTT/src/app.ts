@@ -1,13 +1,15 @@
-import Thermometer from "./MQTT/Thermometer";
-import Tuya from "./MQTT/Tuya";
+import Tuya from "./MQTT/Tuya"
 
-async function main() {
-    const tuya = await Tuya.build();
-    const fc = await Thermometer.build("dk744daa4d4", 20);
-    const sc = await Thermometer.build("dk74s1sa64a", 30);
-    await fc.client.subscribe("do/stuff");
-    await sc.client.subscribe("do/stuff");
-    await sc.client.publish("do/stuff", "bjr");
+function main() {
+    const devices_data = [
+        {type: "thermometer", device_id: "dk744daa4d4", params: {temp_current: 20}},
+        {type: "thermometer", device_id: "dk74s1sa64a", params: {temp_current: 30}}
+    ]
+
+    Tuya.build(devices_data).then(async t => {
+        await t.ready()
+        await t.publishToAllDevices("bonjour c'est tuya")
+    });
 }
 
 main()
