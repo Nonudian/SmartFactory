@@ -2,11 +2,11 @@ import {AsyncMqttClient} from "async-mqtt";
 import {Packet} from "mqtt-packet";
 
 abstract class MQTTDevice {
-    public readonly id: string;
+    protected readonly device_id: string;
     public readonly client: AsyncMqttClient;
 
-    protected constructor(id: string, client: AsyncMqttClient) {
-        this.id = id;
+    protected constructor(device_id: string, client: AsyncMqttClient) {
+        this.device_id = device_id;
         this.client = client;
         this.registerEvents();
     }
