@@ -1,11 +1,11 @@
-import MQTTDevice from "./MQTT/MQTTDevice";
+import MQTTThermometer from "./MQTT/MQTTThermometer";
 
 async function main() {
-    const fc = await MQTTDevice.build("dk744daa4d4");
-    const sc = await MQTTDevice.build("dk74s1sa64a");
-    await fc.getClient().subscribe("do/stuff");
-    await sc.getClient().subscribe("do/stuff");
-    await sc.getClient().publish("do/stuff", "bjr");
+    const fc = await MQTTThermometer.build("dk744daa4d4", 20);
+    const sc = await MQTTThermometer.build("dk74s1sa64a", 30);
+    await fc.client.subscribe("do/stuff");
+    await sc.client.subscribe("do/stuff");
+    await sc.client.publish("do/stuff", "bjr");
 }
 
 main()
