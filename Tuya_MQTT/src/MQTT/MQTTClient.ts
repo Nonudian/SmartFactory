@@ -2,11 +2,9 @@ const mqtt = require('mqtt')
 
 class MQTTClient {
     public id: string;
+    public client;
 
-    constructor(id: string) {
-        this.id = id;
-        const client = mqtt.connect('mqtt://test.mosquitto.org')
-
+    constructor(id: string, client) {
         client.on('connect', function () {
             client.subscribe('presence', function (err) {
                 if (!err) {
@@ -16,11 +14,23 @@ class MQTTClient {
         })
 
         client.on('message', function (topic, message) {
-            // message is Buffer
             console.log(message.toString())
             client.end()
         })
+
+        client.on('error', function () {
+            console.log("ERROR")
+            client.end()
+        })
+
+        this.id = id
+        this.client = client
+    }
+
+    public static async build(id: string): Promise<MQTTClient> {
+        const client = await mqtt.connect('mqtt://test.mosquitto.org')
+        return new MQTTClient(id, client)
     }
 }
 
-export default MQTTClient;
+export default MQTTClient
