@@ -1,7 +1,8 @@
 import { Device } from "./Device";
 
 
-type ThermometerType = {
+// Thermometer specifications
+export type ThermometerType = {
     type: string;
     deviceId: string;
     params: {
@@ -9,7 +10,7 @@ type ThermometerType = {
     };
 };
 
-/** Thermometer client */
+// Thermometer client
 export class Thermometer extends Device {
     protected temperature: number;
 
@@ -18,7 +19,14 @@ export class Thermometer extends Device {
         this.temperature = temperature;
     }
 
+    async build() {
+        super.build().then(async device => {
+            setInterval(() => device.publishToTuya(`The temperature of the thermometer <${this.deviceId}> is ${this.temperature}°C`), 2000);
+        });
+        return this;
+    }
+
     handleMessage(topic: string, payload: Buffer): void {
-        console.info(`Thermometer <${this.deviceId}> with current temperature ${this.temperature}°C, received the following message on topic <${topic}>: ${payload}`);
+        console.info(`Thermometer <${this.deviceId}> received the following message on topic <${topic}>: ${payload}`);
     }
 }

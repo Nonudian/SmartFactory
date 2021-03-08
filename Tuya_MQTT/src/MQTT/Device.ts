@@ -1,7 +1,7 @@
 import { MQTTClient } from "./MQTTClient";
 
 
-/** Device client */
+// Device client
 export abstract class Device extends MQTTClient {
     type: string;
     deviceId: string;
@@ -13,10 +13,7 @@ export abstract class Device extends MQTTClient {
     }
 
     async build() {
-        super.build().then(async client => {
-            await client.subscribe(`device.${this.type}.${this.deviceId}`);
-            setInterval(() => client.publishToTuya(`I'm the device <${this.deviceId}>`), 3000);
-        });
+        super.build().then(async client => await client.subscribe(`device.${this.type}.${this.deviceId}`));
         return this;
     }
 

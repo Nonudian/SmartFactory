@@ -2,7 +2,7 @@ import { MQTTClient } from "./MQTTClient";
 import { Device } from "./Device";
 
 
-/** Tuya client */
+// Tuya client
 export class Tuya extends MQTTClient {
     private devices: Device[];
 

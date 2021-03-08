@@ -1,7 +1,7 @@
 import { AsyncMqttClient, connectAsync } from "async-mqtt";
 
 
-/** MQTT client */
+// MQTT client
 export abstract class MQTTClient {
     private client: AsyncMqttClient;
 

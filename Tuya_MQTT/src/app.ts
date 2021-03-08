@@ -1,21 +1,27 @@
-import { Thermometer } from "./MQTT/Thermometer";
+import { Device } from "./MQTT/Device";
+import { Lamp, LampType } from "./MQTT/Lamp";
+import { Thermometer, ThermometerType } from "./MQTT/Thermometer";
 import { Tuya } from "./MQTT/Tuya";
 
 
-// device configuration
+// device configurations
 const deviceConfig = [
     { type: "thermometer", deviceId: "dk744daa4d4", params: { temperature: 20 } },
     { type: "thermometer", deviceId: "dk74s1sa64a", params: { temperature: 30 } },
-    { type: "lamp", deviceId: "dk74s1sa64b", params: { mdr: 20 } }
+    { type: "lamp", deviceId: "dk75s1za38b", params: { switchLed: false } },
+    { type: "lamp", deviceId: "dk79s1za88c", params: { switchLed: true } }
 ];
 
-function getDevices() {
+// build devices
+function getDevices(): Promise<Device>[] {
     return deviceConfig.map(config => {
         switch (config.type) {
-            case "thermometer": return new Thermometer(config).build();
-            default: throw new Error(`<${config.type}> is not a recognized device.`);;
+            case "thermometer": return new Thermometer(<ThermometerType>config).build();
+            case "lamp": return new Lamp(<LampType>config).build();
+            default: throw new Error(`<${config.type}> is not a recognized device.`);
         }
     });
 }
 
+// link devices with Tuya client
 Promise.all(getDevices()).then(devices => new Tuya(devices).build());
