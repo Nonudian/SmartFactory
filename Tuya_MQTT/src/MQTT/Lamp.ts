@@ -19,14 +19,13 @@ export class Lamp extends Device {
         this.switchLed = switchLed;
     }
 
-    async build() {
-        super.build().then(async device => {
-            setInterval(() => device.publishToTuya(`The lamp <${this.deviceId}> is currently ${this.switchLed ? `ON` : `OFF`}`), 2000);
-        });
-        return this;
-    }
-
     handleMessage(topic: string, payload: Buffer): void {
         console.info(`Lamp <${this.deviceId}> received the following message on topic <${topic}>: ${payload}`);
+        switch(payload.toString()) {
+            case "switch_led":
+                this.switchLed = !this.switchLed;
+                this.publishToTuya(`The lamp <${this.deviceId}> is currently ${this.switchLed ? `ON` : `OFF`}`)
+                break;
+        }
     }
 }

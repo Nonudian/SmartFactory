@@ -15,8 +15,30 @@ export class Tuya extends MQTTClient {
         super.build().then(async client => {
             await client.subscribe("tuya");
             await client.publishToAllDevices("I'm Tuya");
+            setInterval(() => client.loop(), 2000);
         });
         return this;
+    }
+
+    async loop() {
+        await this.switchLamp()
+        await this.requireTemperature()
+    }
+
+    async switchLamp() {
+        for (const { type, deviceId } of this.devices) {
+            if(type === "lamp") {
+                await this.publish(`device.${type}.${deviceId}`, "switch_led");
+            }
+        }
+    }
+
+    async requireTemperature() {
+        for (const { type, deviceId } of this.devices) {
+            if(type === "thermometer") {
+                await this.publish(`device.${type}.${deviceId}`, "temp_current");
+            }
+        }
     }
 
     async publishToAllDevices(message: string) {

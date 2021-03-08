@@ -19,14 +19,12 @@ export class Thermometer extends Device {
         this.temperature = temperature;
     }
 
-    async build() {
-        super.build().then(async device => {
-            setInterval(() => device.publishToTuya(`The temperature of the thermometer <${this.deviceId}> is ${this.temperature}°C`), 2000);
-        });
-        return this;
-    }
-
     handleMessage(topic: string, payload: Buffer): void {
         console.info(`Thermometer <${this.deviceId}> received the following message on topic <${topic}>: ${payload}`);
+        switch(payload.toString()) {
+            case "temp_current":
+                this.publishToTuya(`The temperature of the thermometer <${this.deviceId}> is ${this.temperature}°C`)
+                break;
+        }
     }
 }
