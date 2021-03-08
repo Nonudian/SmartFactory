@@ -1,23 +1,21 @@
-import { ThermometerBuilder } from "./MQTT/ThermometerBuilder";
-import { TuyaBuilder } from "./MQTT/TuyaBuilder";
+import { Thermometer } from "./MQTT/Thermometer";
+import { Tuya } from "./MQTT/Tuya";
 
 
-//TODO: make client manager that will take devices[x].type in arguments
-const devices = [
-    { type: "thermometer", deviceId: "dk744daa4d4", params: { tempCurrent: 20 } },
-    { type: "thermometer", deviceId: "dk74s1sa64a", params: { tempCurrent: 30 } }
+// device configuration
+const deviceConfig = [
+    { type: "thermometer", deviceId: "dk744daa4d4", params: { temperature: 20 } },
+    { type: "thermometer", deviceId: "dk74s1sa64a", params: { temperature: 30 } },
+    { type: "lamp", deviceId: "dk74s1sa64b", params: { mdr: 20 } }
 ];
 
-new ThermometerBuilder()
-    .withDeviceId(devices[0].deviceId)
-    .withTemperature(devices[0].params.tempCurrent)
-    .build();
+function getDevices() {
+    return deviceConfig.map(config => {
+        switch (config.type) {
+            case "thermometer": return new Thermometer(config).build();
+            default: throw new Error(`<${config.type}> is not a recognized device.`);;
+        }
+    });
+}
 
-new ThermometerBuilder()
-    .withDeviceId(devices[1].deviceId)
-    .withTemperature(devices[1].params.tempCurrent)
-    .build();
-
-new TuyaBuilder()
-    .withDevices(devices)
-    .build();
+Promise.all(getDevices()).then(devices => new Tuya(devices).build());

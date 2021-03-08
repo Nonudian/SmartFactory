@@ -1,20 +1,20 @@
-import { MQTTClientBuilder } from "./MQTTClientBuilder";
-import { Device } from "./DeviceBuilder";
+import { MQTTClient } from "./MQTTClient";
+import { Device } from "./Device";
 
 
-/** Tuya client builder */
-export class TuyaBuilder extends MQTTClientBuilder {
+/** Tuya client */
+export class Tuya extends MQTTClient {
     private devices: Device[];
 
-    withDevices(devices: Device[]) {
+    constructor(devices: Device[]) {
+        super();
         this.devices = devices;
-        return this;
     }
 
     async build() {
-        super.build().then(async tuya => {
-            await tuya.subscribe("tuya");
-            await tuya.publishToAllDevices("I'm Tuya");
+        super.build().then(async client => {
+            await client.subscribe("tuya");
+            await client.publishToAllDevices("I'm Tuya");
         });
         return this;
     }
