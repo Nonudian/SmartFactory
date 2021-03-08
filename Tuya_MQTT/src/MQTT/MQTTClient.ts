@@ -1,6 +1,5 @@
 import { AsyncMqttClient, connectAsync } from "async-mqtt";
 
-
 // MQTT client
 export abstract class MQTTClient {
     private client: AsyncMqttClient;
@@ -15,8 +14,8 @@ export abstract class MQTTClient {
         await this.client.subscribe(topic);
     }
 
-    protected async publish(topic: string, message: string) {
-        await this.client.publish(topic, message);
+    protected async publish(topic: string, payload: Buffer) {
+        await this.client.publish(topic, payload);
     }
 
     protected abstract handleMessage(topic: string, payload: Buffer): void;

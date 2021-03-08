@@ -1,10 +1,9 @@
 import { MQTTClient } from "./MQTTClient";
 import { Device } from "./Device";
 
-
 // Tuya client
 export class Tuya extends MQTTClient {
-    private devices: Device[];
+    private readonly devices: Device[];
 
     constructor(devices: Device[]) {
         super();
@@ -14,36 +13,23 @@ export class Tuya extends MQTTClient {
     async build() {
         super.build().then(async client => {
             await client.subscribe("tuya");
-            await client.publishToAllDevices("I'm Tuya");
-            setInterval(() => client.loop(), 2000);
+            setInterval(() => client.executeRandomCommandOnAllDevices(), 2000);
         });
         return this;
     }
 
-    async loop() {
-        await this.switchLamp()
-        await this.requireTemperature()
-    }
-
-    async switchLamp() {
-        for (const { type, deviceId } of this.devices) {
-            if(type === "lamp") {
-                await this.publish(`device.${type}.${deviceId}`, "switch_led");
-            }
+    async executeRandomCommandOnAllDevices() {
+        for (const { type, deviceId, attrs, functions } of this.devices) {
+            const funcs = (Math.random() < 0.5) ? Object.keys(functions.report) : Object.keys(functions.issue);
+            if(funcs.length === 0) continue; // there is no valid function to call on the device
+            const toBuf = funcs[Math.floor(Math.random() * funcs.length)];
+            await this.publish(`device.${type}.${deviceId}`, Buffer.from(toBuf));
         }
     }
 
-    async requireTemperature() {
+    async publishToAllDevices(payload: Buffer) {
         for (const { type, deviceId } of this.devices) {
-            if(type === "thermometer") {
-                await this.publish(`device.${type}.${deviceId}`, "temp_current");
-            }
-        }
-    }
-
-    async publishToAllDevices(message: string) {
-        for (const { type, deviceId } of this.devices) {
-            await this.publish(`device.${type}.${deviceId}`, message);
+            await this.publish(`device.${type}.${deviceId}`, payload);
         }
     }
 
